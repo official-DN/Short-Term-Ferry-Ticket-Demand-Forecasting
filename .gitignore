@@ -1,0 +1,30 @@
+# Python environment
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Generated large datasets
+dataProcess/Toronto_Ferry_Forecasting_Features.csv
+
+# Generated outputs
+dataProcess/forecast_outputs/
+dataProcess/model_outputs/
+dataProcess/uncertainty_results/
+dataProcess/evaluation_results/
+model_scores/
+
+# Model files
+*.pkl
+*.joblib
+*.h5
+*.keras
+
+# Archives
+*.zip
+
+# Environment secrets
+.env
