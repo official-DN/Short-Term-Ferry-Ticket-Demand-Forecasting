@@ -8,6 +8,59 @@ import plotly.graph_objects as go
 import plotly.express as px
 
 st.set_page_config(page_title="Short Ferry Demand Forecasting", page_icon="⛴️", layout="wide")
+
+# ---------------- Theme setup (CSS applied across the app) ----------------
+if "app_theme" not in st.session_state:
+    st.session_state.app_theme = "Dark"
+
+def get_theme_colors(mode):
+    if mode == "Dark":
+        return {
+            "bg": "#0E1117",
+            "panel": "#161B22",
+            "text": "#E6EDF3",
+            "muted": "#9BA7B4",
+            "border": "#30363D",
+        }
+    return {
+        "bg": "#FFFFFF",
+        "panel": "#F4F6F9",
+        "text": "#17202A",
+        "muted": "#596579",
+        "border": "#D9E0E8",
+    }
+
+theme = get_theme_colors(st.session_state.app_theme)
+
+st.markdown(
+    f"""
+    <style>
+    .stApp {{
+        background-color: {theme["bg"]};
+        color: {theme["text"]};
+    }}
+    [data-testid="stSidebar"] {{
+        background-color: {theme["panel"]};
+    }}
+    [data-testid="stHeader"] {{
+        background-color: {theme["bg"]};
+    }}
+    [data-testid="stMarkdownContainer"], [data-testid="stMetric"],
+    label, p, h1, h2, h3, h4, h5, h6 {{
+        color: {theme["text"]};
+    }}
+    [data-testid="stDataFrame"], [data-testid="stTable"] {{
+        background-color: {theme["panel"]};
+    }}
+    div[data-testid="stAlert"] {{
+        border-color: {theme["border"]};
+    }}
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+
 ROOT = Path(__file__).resolve().parent
 DP = ROOT / "dataProcess"
 DATA_CANDIDATES = [DP / "Toronto_Island_Ferry_Tickets.csv", ROOT / "Toronto_Island_Ferry_Tickets.csv"]
@@ -216,7 +269,15 @@ fig.add_trace(go.Scatter(x=hist.index, y=hist.values, mode="lines", name="Observ
 future = origin + pd.Timedelta(minutes=horizon)
 fig.add_trace(go.Scatter(x=[origin, future], y=[current_demand, prediction], mode="lines+markers", name="Forecast", line=dict(dash="dash")))
 fig.add_trace(go.Scatter(x=[future, future], y=[lower, upper], mode="lines", name=f"{interval_level}% interval", line=dict(width=8), opacity=.35))
-fig.update_layout(height=430, xaxis_title="Timestamp", yaxis_title=target)
+fig.update_layout(
+    height=430,
+    xaxis_title="Timestamp",
+    yaxis_title=target,
+    template="plotly_dark" if st.session_state.app_theme == "Dark" else "plotly_white",
+    paper_bgcolor=theme["bg"],
+    plot_bgcolor=theme["bg"],
+    font_color=theme["text"],
+)
 st.plotly_chart(fig, use_container_width=True)
 
 st.subheader("Model comparison · original model notebook")
@@ -248,7 +309,15 @@ with st.expander("Actual vs predicted holdout values"):
         name="Predicted",
         line=dict(color="rgb(0, 150, 255)"),
     ))
-    cf.update_layout(height=350, xaxis_title="Timestamp", yaxis_title=target)
+    cf.update_layout(
+        height=350,
+        xaxis_title="Timestamp",
+        yaxis_title=target,
+        template="plotly_dark" if st.session_state.app_theme == "Dark" else "plotly_white",
+        paper_bgcolor=theme["bg"],
+        plot_bgcolor=theme["bg"],
+        font_color=theme["text"],
+    )
     st.plotly_chart(cf, use_container_width=True)
 
 #· key_performence/indicator.py
@@ -317,4 +386,15 @@ if question:
 
 # Sidebar caption to clarify that the forecasts are based on historical data and not live ticketing data.
 st.sidebar.caption("Forecasts use the uploaded historical dataset and are not connected to live ferry ticketing data.")
- 
+
+# Theme switcher is intentionally placed at the bottom of the sidebar.
+st.sidebar.divider()
+st.sidebar.caption("Appearance")
+if st.session_state.app_theme == "Dark":
+    if st.sidebar.button("☀️ Switch to Light Mode", key="theme_toggle_bottom", use_container_width=True):
+        st.session_state.app_theme = "Light"
+        st.rerun()
+else:
+    if st.sidebar.button("🌙 Switch to Dark Mode", key="theme_toggle_bottom", use_container_width=True):
+        st.session_state.app_theme = "Dark"
+        st.rerun()
