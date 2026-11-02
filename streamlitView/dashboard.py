@@ -222,10 +222,6 @@ fig.update_layout(
     height=430,
     xaxis_title="Timestamp",
     yaxis_title=target,
-    template="plotly_dark" if st.session_state.app_theme == "Dark" else "plotly_white",
-    paper_bgcolor=theme["bg"],
-    plot_bgcolor=theme["bg"],
-    font_color=theme["text"],
 )
 st.plotly_chart(fig, use_container_width=True)
 
@@ -262,10 +258,6 @@ with st.expander("Actual vs predicted holdout values"):
         height=350,
         xaxis_title="Timestamp",
         yaxis_title=target,
-        template="plotly_dark" if st.session_state.app_theme == "Dark" else "plotly_white",
-        paper_bgcolor=theme["bg"],
-        plot_bgcolor=theme["bg"],
-        font_color=theme["text"],
     )
     st.plotly_chart(cf, use_container_width=True)
 
