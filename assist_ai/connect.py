@@ -12,16 +12,33 @@ import os
 import time
 from pathlib import Path
 
+
+import streamlit as st
 from dotenv import load_dotenv
 from google import genai
 from google.genai import errors, types
 
-
-# Load .env from the same folder as this file
+# Load local environment variables
 ENV_PATH = Path(__file__).resolve().parent / ".env"
-load_dotenv(dotenv_path=ENV_PATH, override=True)
+load_dotenv(dotenv_path=ENV_PATH, override=False)
 
 
+def get_config(key, default=None):
+    """Read configuration from environment or Streamlit Secrets."""
+
+    value = os.getenv(key)
+
+    if value:
+        return value
+
+    try:
+        value = st.secrets.get(key)
+        if value:
+            return str(value)
+    except Exception:
+        pass
+
+    return default
 class GeminiConnectionError(RuntimeError):
     """Raised when Gemini cannot complete a request."""
 
