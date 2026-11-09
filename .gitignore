@@ -26,5 +26,13 @@ model_scores/
 # Archives
 *.zip
 
+# API credentials
+.env
+*.env
+
+# Virtual environments
+env/
+
 # Environment secrets
+assist_ai/.env
 assist_ai/.env.example
