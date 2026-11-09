@@ -297,28 +297,6 @@ else:
 #st.caption("Project-grounded chat representation using the currently selected forecast and score tables.")
 #
 
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
-for msg in st.session_state.chat_history:
-    with st.chat_message(msg["role"]): st.markdown(msg["content"])
-question = st.chat_input("Ask about demand, model scores, confidence, alerts, or recommendations...")
-if question:
-    st.session_state.chat_history.append({"role":"user", "content":question})
-    q = question.lower()
-    if any(k in q for k in ["score", "accuracy", "mae", "rmse", "best model", "performance"]):
-        best = score_df.iloc[0]
-        answer = f"For {target} at +{horizon} minutes, the lowest holdout MAE model is {best['Model']} (MAE {best['MAE']:.2f}, RMSE {best['RMSE']:.2f}, sMAPE {best['sMAPE_percent']:.2f}%)."
-    elif any(k in q for k in ["peak", "busy", "alert"]):
-        answer = f"The forecast is {prediction:.1f}, and the alert threshold is {peak_threshold:.1f}. " + ("This is a peak alert; review staffing and queue management." if prediction >= peak_threshold else "The forecast is below the peak threshold.")
-    elif any(k in q for k in ["confidence", "interval", "uncertainty", "band"]):
-        answer = f"The empirical {interval_level}% interval is {lower:.1f} to {upper:.1f}. It is estimated from holdout absolute errors; it is not a guaranteed probabilistic bound."
-    elif any(k in q for k in ["recommend", "staff", "queue", "operation"]):
-        answer = "Use the selected forecast as a planning signal, check recent actual ticket counts, and keep staffing/queue measures flexible around predicted peaks. Refresh forecasts as new data arrive."
-    else:
-        answer = f"The current selected project model is {selected_model}, forecasting {target} +{horizon} minutes at {origin}. The forecast is {prediction:.1f}. You can ask about model scores, intervals, peak alerts, or operational recommendations."
-    st.session_state.chat_history.append({"role":"assistant", "content":answer})
-    st.rerun()
-
 
 #with st.expander("Project objectives and modules"):
 #   st.markdown("**Primary objectives**\n- Forecast short-term ferry ticket sales and redemptions.\n- Predict demand for 15m, 30m, 1h, and 2h windows.\n- Compare statistical and ML forecasting approaches.\n\n**Secondary objectives**\n- Quantify uncertainty.\n- Support proactive operations.\n- Demonstrate ML deployment with Streamlit.\n\n**Integrated project files:** main_01.ipynb (data understanding), main_02train_test.ipynb (preprocessing/features/chronological split), main_03models.ipynb (model training/metrics), main_04evaluation.ipynb (evaluation functions), main_05uncertainty_ana.ipynb (interval analysis), indicator.py (KPIs), show_score.py (performance scores).")

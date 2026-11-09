@@ -26,6 +26,11 @@ pages = [
         title="Passenger Crowd",
         icon="👥",
     ),
+    st.Page(
+        "streamlitView/aiAssistant.py",
+        title="AI Assistant",
+        icon="🤖"
+    )
 ]
 
 navigation = st.navigation(pages)

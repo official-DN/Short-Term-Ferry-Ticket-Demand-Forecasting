@@ -27,4 +27,5 @@ model_scores/
 *.zip
 
 # Environment secrets
-.env
+assist_ai/.env
+assist_ai/.env.example
